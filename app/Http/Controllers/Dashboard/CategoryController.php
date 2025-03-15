@@ -14,9 +14,26 @@ class CategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::select('image', 'id', 'parent_id', 'name', 'created_at')->get(); // Fetch only required columns
+        $name = $request->query('name');
+
+        $status = $request->query('status');
+
+        $categories = Category::with('parent')
+            // select('image', 'id', 'parent_id', 'name', 'status', 'created_at')
+            ->withCount([
+                'products as product_number' => function ($query) {
+                    $query->where('status', 'active');
+                }
+            ])
+
+            ->when($name, fn($query) => $query->where('name', 'like', "%$name%"))
+            ->when($status, fn($query) => $query->where('status', $status))
+            ->paginate(2);
+
+
+
         return view('dashboard.Categories.index', compact('categories'));
     }
     //Image	ID	Name	Parent	Created At	
@@ -44,7 +61,12 @@ class CategoryController extends Controller
         return redirect()->route('dashboard.categories.index')->with('success', 'Category created successfully!');
     }
 
-
+    public function show(Category $category)
+    {
+        return view('dashboard.categories.show', [
+            'category' => $category,
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.
@@ -96,11 +118,16 @@ class CategoryController extends Controller
 
         $category->delete();
 
-        if ($category->image) {
-            Storage::disk('public')->delete($category->image);
-        }
+        // if ($category->image) {
+        //     Storage::disk('public')->delete($category->image);
+        // } 
+
+        //move the last code to force delete reason for using Trash and force delete    
+
         return redirect()->route('dashboard.categories.index')->with('success', 'Category deleted successfully!');
     }
+
+
 
     protected function uploadImage(Request $request)
     {
@@ -108,11 +135,45 @@ class CategoryController extends Controller
         if (!$request->hasFile('image')) {
             return '';
         }
-        $file=$request->file('image');
-        $filename=time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        $file = $request->file('image');
+        $filename = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
 
-        $file->storeAs('uploads',$filename,'public');
+        $file->storeAs('uploads', $filename, 'public');
         return 'uploads/' . $filename;
+    }
 
+
+    public function trash()
+    {
+        $categories = Category::onlyTrashed()->paginate(2);
+
+        return view('dashboard.categories.trash', compact('categories'));
+    }
+
+    public function restore(Request $request, $id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+
+        $category->restore();
+
+        return redirect()->route('dashboard.categories.trash')
+            ->with('success', 'Category restored!');
+    }
+
+
+
+    public function forceDelete($id)
+    {
+
+        $category = Category::onlyTrashed()->findOrFail($id);
+
+        $category->forceDelete();
+
+
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
+        }
+        return redirect()->route('dashboard.categories.trash')
+            ->with('success', 'Category delete for restored!');
     }
 }

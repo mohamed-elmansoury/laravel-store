@@ -15,13 +15,13 @@ return [
         'active' => 'dashboard.categories.*',
         'ability' => 'categories.view',
     ],
-    // [
-    //     'icon' => 'fas fa-box nav-icon',
-    //     'route' => 'dashboard.products.index',
-    //     'title' => 'Products',
-    //     'active' => 'dashboard.products.*',
-    //     'ability' => 'products.view',
-    // ],
+    [
+        'icon' => 'fas fa-box nav-icon',
+        'route' => 'dashboard.products.index',
+        'title' => 'Products',
+        'active' => 'dashboard.products.*',
+        'ability' => 'products.view',
+    ],
     // [
     //     'icon' => 'fas fa-receipt nav-icon',
     //     'route' => 'dashboard.categories.index',

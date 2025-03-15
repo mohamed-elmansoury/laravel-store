@@ -4,6 +4,7 @@
 @section('breadcrumb')
     @parent
     <li class="breadcrumb-item active">category Page</li>
+    <li class="breadcrumb-item active">category trash</li>
 @endsection
 
 
@@ -17,8 +18,8 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <h2 class="mb-3 text-center">Categories List</h2>
-        <a href="{{ route('dashboard.categories.create') }}" class="btn btn-md btn-primary mr-2  ">create</a>
+        <h2 class="mb-3 text-center">Categories trash List</h2>
+        <a href="{{ route('dashboard.categories.index') }}" class="btn btn-md btn-primary mr-2  ">Category</a>
         <a href="{{ route('dashboard.categories.trash') }}" class="btn btn-md btn-dark">Trash</a>
 
         <hr>
@@ -45,10 +46,8 @@
                     <th>Image</th>
                     <th>ID</th>
                     <th>Name</th>
-                    <th>Parent</th>
-                    <th>productNumber</th>
                     <th>status</th>
-                    <th>Created At</th>
+                    <th>deleted At</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -60,36 +59,39 @@
                                 <img src="{{ asset('storage/' . $category->image) }}" alt="Category Image" class="rounded"
                                     width="50" height="50">
                             @else
-                                <span class="text-muted">-</span>
+                                <span class="text-muted">No Image</span>
                             @endif
                         </td>
                         <td>{{ $category->id }}</td>
-                        <td><a href="{{ route('dashboard.categories.show', $category->id) }}">{{ $category->name }}</a></td>
-                        <td>{{ $category->parent_id ?? 'None' }}</td>
-                        <td>{{ $category->product_number }}</td>
-
+                        <td>{{ $category->name }}</td>
                         <td>{{ $category->status }}</td>
-                        <td>{{ $category->created_at->format('Y-m-d') }}</td>
+                        <td>{{ $category->deleted_at->format('Y-m-d') }}</td>
                         <td>
-                            <a href="{{ route('dashboard.categories.edit', $category->id) }}"
-                                class="btn btn-sm btn-primary">
-                                <i class="bi bi-pencil"></i> Edit
-                            </a>
 
-                            <form action="{{ route('dashboard.categories.destroy', $category->id) }}" method="POST"
+                            <form action="{{ route('dashboard.categories.restore', $category->id) }}" method="POST"
+                                class="d-inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-sm btn-outline-info">
+                                    <i class="bi bi-trash"></i> Restore
+                                </button>
+                            </form>
+
+
+                            <form action="{{ route('dashboard.categories.forceDelete', $category->id) }}" method="POST"
                                 class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger"
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
                                     onclick="return confirm('Are you sure?')">
-                                    <i class="bi bi-trash"></i> Delete
+                                    <i class="bi bi-trash"></i> forceDelete
                                 </button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted">No categories found.</td>
+                        <td colspan="6" class="text-center text-muted">No categories found.</td>
                     </tr>
                 @endforelse
             </tbody>
