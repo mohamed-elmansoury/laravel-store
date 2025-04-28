@@ -16,10 +16,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Theme style -->
     <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
     <!-- Google Font: Source Sans Pro -->
-    <link rel="stylesheet" href="{{ asset('fonts/SansPro/SansPro.min.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('fonts/SansPro/SansPro.min.css') }}"> --}}
     {{-- <link rel="stylesheet" href="{{ asset('css/bootstrap_trl-v4.2.1/bootstrap.min.css') }}"> --}}
     {{-- <link rel="stylesheet" href="{{ asset('css/bootstrap_trl-v4.2.1/custom_trl.css') }}"> --}}
-    <link rel="stylesheet" href="{{ asset('css/mycustomstyle.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/mycustomstyle.css') }}"> --}}
     @stack('css')
 
 </head>

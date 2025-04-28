@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Front\ProductsController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [ ProductsController::class, 'index'])->name('home');
+
+Route::get('/products/{product:slug}', [ ProductsController::class, 'show'])->name('product.show');
+
+route::get('/products', [ ProductsController::class, 'index'])->name('product.index');
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
